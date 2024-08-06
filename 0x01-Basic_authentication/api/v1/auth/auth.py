@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Module for authentication in a Flask application.
 
