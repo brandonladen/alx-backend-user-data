@@ -15,6 +15,11 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 
 auth_type = getenv('AUTH_TYPE')
+path_s = [
+            '/api/v1/status/',
+            '/api/v1/unauthorized/',
+            '/api/v1/forbidden/'
+        ]
 
 if auth_type == 'auth':
     from api.v1.auth.auth import Auth
@@ -51,20 +56,11 @@ def before_request():
     Before request handler to enforce Basic Authentication.
     """
     # Skip authentication for certain paths
-    if request.path in [
-            '/api/v1/status/',
-            '/api/v1/unauthorized/',
-            '/api/v1/forbidden/']:
+    if request.path in path_s:
         return
 
     # Check if authentication is required for the path
-    if not auth.require_auth(request.path,
-            [
-                '/api/v1/status/',
-                '/api/v1/unauthorized/',
-                '/api/v1/forbidden/'
-            ]
-        ):
+    if not auth.require_auth(request.path, path_s):
         return
 
     # Check if the authorization header is present
