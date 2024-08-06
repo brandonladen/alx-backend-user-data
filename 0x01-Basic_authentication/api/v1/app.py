@@ -46,16 +46,35 @@ def forbidden(error) -> str:
 
 @app.before_request
 def before_request():
-    if not auth:
-        return
+    """
+    Before request handler to enforce Basic Authentication.
+
+    This function is executed before processing any request. It checks the
+    request path and enforces authentication for routes not excluded. If
+    authentication is required and either the authorization header is missing
+    or the user could not be authenticated, the function will return an error
+    response:
+        - 401 Unauthorized if the authorization header is missing.
+        - 403 Forbidden if the user could not be authenticated.
+
+    Excluded paths are:
+        - /api/v1/status/
+        - /api/v1/unauthorized/
+        - /api/v1/forbidden/
+    """
+    # Skip authentication for certain paths
     if request.path in ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']:
         return
 
+    # Check if authentication is required for the path
     if not auth.require_auth(request.path, ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']):
         return
     
+    # Check if the authorization header is present
     if auth.authorization_header(request) is None:
         abort(401)
+
+    # Check if the current user is authenticated
     if auth.current_user(request) is None:
         abort(403)
     
