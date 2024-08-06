@@ -22,7 +22,7 @@ class Auth:
             return True
         if not excluded_paths:
             return True
-        
+
         # Normalize the path by removing trailing slashes
         normalized_path = path.rstrip('/')
 
@@ -34,8 +34,7 @@ class Auth:
 
         # If no match is found, return True
         return True
-    
-    
+
     def authorization_header(self, request=None) -> str:
         """
         Retrieve the Authorization header from a request.
@@ -43,10 +42,9 @@ class Auth:
             str: The value of the Authorization header, or None if not present.
         """
         if request is not None:
-           return request.headers.get('Authorization', None)
+            return request.headers.get('Authorization', None)
         return None
-    
-        
+
     def current_user(self, request=None) -> TypeVar('User'):
         """
         Retrieve the current user based on the request.
