@@ -3,7 +3,7 @@
 Module that handles all routes for the Session authentication.
 """
 from api.v1.views import app_views
-from flask import jsonify, request
+from flask import jsonify, request, abort
 from models.user import User
 from os import getenv
 
@@ -35,3 +35,14 @@ def login() -> str:
     out = jsonify(users[0].to_json())
     out.set_cookie(getenv('SESSION_NAME'), session_id)
     return out
+
+@app_views.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """/api/v1/auth_session/logout
+    """
+    from api.v1.app import auth
+    
+    if not auth.destroy_session(request):
+        abort(404)
+    
+    return jsonify({}), 200
