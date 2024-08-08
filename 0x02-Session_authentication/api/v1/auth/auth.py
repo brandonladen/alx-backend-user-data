@@ -5,6 +5,7 @@ Module for authentication in a Flask application.
 
 from flask import request
 from typing import List, TypeVar
+import os
 
 
 class Auth:
@@ -52,3 +53,13 @@ class Auth:
             TypeVar('User'): The current user, or None if not authenticated.
         """
         return None
+    def session_cookie(self, request=None):
+        """Returns a cookie value from a request
+        """
+        if not request:
+            return None
+        session_name = os.getenv('SESSION_NAME')
+        if not session_name:
+            return None
+        
+        return request.cookies.get(session_name)
