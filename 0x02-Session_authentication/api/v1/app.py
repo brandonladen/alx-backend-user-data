@@ -26,12 +26,12 @@ elif auth_type == 'session_auth':
     auth = SessionAuth()
 
 
-path_s = [
+excluded_paths = [
             '/api/v1/status/',
             '/api/v1/unauthorized/',
-            '/api/v1/forbidden/'
+            '/api/v1/forbidden/',
+            '/api/v1/auth_session/login/',
         ]
-
 
 @app.errorhandler(404)
 def not_found(error) -> str:
@@ -60,15 +60,15 @@ def before_request():
     Before request handler to enforce Basic Authentication.
     """
     # Skip authentication for certain paths
-    if request.path in path_s:
+    if request.path in excluded_paths:
         return
 
     # Check if authentication is required for the path
-    if not auth.require_auth(request.path, path_s):
+    if not auth.require_auth(request.path, excluded_paths):
         return
 
     # Check if the authorization header is present
-    if auth.authorization_header(request) is None:
+    if auth.authorization_header(request) is None and auth.session_cookie(request) is None:
         abort(401)
 
     # Check if the current user is authenticated
